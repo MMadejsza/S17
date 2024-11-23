@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import Input from './Input.jsx';
 
 export default function Login() {
 	// const [enteredEmail, setEnteredEmail] = useState('');
@@ -8,6 +9,12 @@ export default function Login() {
 		email: '',
 		password: '',
 	});
+	const [didEdit, setDidEdit] = useState({
+		email: false,
+		password: false,
+	});
+
+	const emailIsInvalid = didEdit.email && !enteredValues.email.includes('@');
 
 	function handleSubmission(e) {
 		e.preventDefault();
@@ -22,6 +29,10 @@ export default function Login() {
 			...prevState,
 			[identifier]: e.target.value ?? null,
 		}));
+		setDidEdit((prevEdit) => ({
+			...prevEdit,
+			[identifier]: false,
+		}));
 	}
 
 	function handleEmailChange(e) {
@@ -31,32 +42,36 @@ export default function Login() {
 		setPasswordEmail(e.target.value);
 	}
 
+	function handleInputBlur(identifier) {
+		setDidEdit((prevEdit) => ({
+			...prevEdit,
+			[identifier]: true,
+		}));
+	}
+
 	return (
 		<form onSubmit={handleSubmission}>
 			<h2>Login</h2>
 
 			<div className='control-row'>
-				<div className='control no-margin'>
-					<label htmlFor='email'>Email</label>
-					<input
-						id='email'
-						type='email'
-						name='email'
-						onChange={(e) => handleInputChange(e, 'email')}
-						value={enteredValues.email}
-					/>
-				</div>
-
-				<div className='control no-margin'>
-					<label htmlFor='password'>Password</label>
-					<input
-						id='password'
-						type='password'
-						name='password'
-						onChange={(e) => handleInputChange(e, 'password')}
-						value={enteredValues.password}
-					/>
-				</div>
+				<Input
+					label='Email'
+					type='email'
+					error={emailIsInvalid && 'Email Wrong'}
+					onBlur={() => handleInputBlur('email')}
+					onChange={(e) => handleInputChange(e, 'email')}
+					value={enteredValues.email}
+				/>
+				<Input
+					label='Password'
+					id='password'
+					type='password'
+					name='password'
+					error={''}
+					onBlur={() => handleInputBlur('password')}
+					onChange={(e) => handleInputChange(e, 'password')}
+					value={enteredValues.password}
+				/>
 			</div>
 
 			<p className='form-actions'>
